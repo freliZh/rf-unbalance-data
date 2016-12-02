@@ -1,8 +1,10 @@
-
+#encoding:utf8
 from __future__ import division
 from collections import Counter
 import random
 import numpy as np
+import pandas as pd
+from pandas import Series, DataFrame
 
 
 def shuffle_in_unison(a, b):
@@ -15,7 +17,7 @@ def shuffle_in_unison(a, b):
 
 def entropy(Y):
     """ In information theory, entropy is a measure of the uncertanty of a random sample from a group. """
-    
+    Y = Y['isTrue'].values.tolist()
     distribution = Counter(Y)
     s = 0.0
     total = len(Y)
@@ -26,6 +28,21 @@ def entropy(Y):
 
 
 def information_gain(y, y_true, y_false):
+
     """ The reduction in entropy from splitting data into two groups. """
     return entropy(y) - (entropy(y_true)*len(y_true) + entropy(y_false)*len(y_false))/len(y)
 
+
+#加载数据
+def load_data():
+    X = pd.read_csv('data/sample_data.csv')
+    X = X.apply(lambda col:col.astype('float'))
+
+    #X = preprocessing.normalize(X)
+    target_list = []
+    with open('data/target.csv') as targetFile:
+        target_list = targetFile.readline().split(',')
+
+    y = Series(target_list).astype('float')
+    X['isTrue'] = y
+    return X
